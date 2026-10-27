@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asistente de información</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 720px; margin: 0 auto; padding: 1rem; color: #1b1b1b; }
+  h1 { font-size: 1.3rem; margin-bottom: .2rem; }
+  #disclaimer { color: #555; font-size: .85rem; margin-bottom: 1rem; }
+  #log { border: 1px solid #ddd; border-radius: 8px; padding: .75rem; min-height: 280px; max-height: 60vh; overflow-y: auto; }
+  .msg { margin: .5rem 0; white-space: pre-wrap; }
+  .user { font-weight: 600; }
+  .bot { background: #f5f7fa; border-radius: 6px; padding: .5rem; }
+  .sources { font-size: .8rem; color: #444; margin-top: .4rem; }
+  form { display: flex; gap: .5rem; margin-top: .75rem; }
+  input { flex: 1; padding: .6rem; border: 1px solid #bbb; border-radius: 6px; font-size: 1rem; }
+  button { padding: .6rem 1rem; border: 0; border-radius: 6px; background: #0b5fff; color: #fff; font-size: 1rem; cursor: pointer; }
+  button:disabled { background: #9ab; cursor: default; }
+  .rate button { background: none; color: inherit; padding: 0 .3rem; font-size: 1rem; }
+</style>
+</head>
+<body>
+<h1 id="title">Asistente de información</h1>
+<div id="disclaimer"></div>
+<div id="log" aria-live="polite"></div>
+<form id="form">
+  <input id="q" maxlength="500" autocomplete="off" placeholder="Escribe tu pregunta (sin datos personales)" required>
+  <button id="send">Enviar</button>
+</form>
+<script>
+// Set window.PUBLIC_API_URL before this script if the API is on another origin (it must allow this origin in PUBLIC_CORS_ORIGINS).
+const API = (window.PUBLIC_API_URL || "http://localhost:8000").replace(/\/$/, "");
+let token = null;
+const log = document.getElementById("log");
+
+function add(cls, text) {
+  const el = document.createElement("div");
+  el.className = "msg " + cls;
+  el.textContent = text;
+  log.appendChild(el);
+  log.scrollTop = log.scrollHeight;
+  return el;
+}
+
+async function openSession() {
+  const r = await fetch(API + "/v1/public/session", { method: "POST" });
+  if (!r.ok) throw new Error(r.status === 404 ? "El asistente público no está disponible." : "No se pudo iniciar la sesión.");
+  token = (await r.json()).access_token;
+  const cfg = await (await fetch(API + "/v1/config", { headers: { Authorization: "Bearer " + token } })).json();
+  document.getElementById("title").textContent = cfg.title;
+  document.getElementById("disclaimer").textContent = cfg.disclaimer;
+}
+
+function sourcesText(sources) {
+  return "Fuentes: " + sources.map(s => (s.document || s.id) + (s.page ? ", p. " + s.page : "")).join(" · ");
+}
+
+async function ask(text) {
+  const bot = add("bot", "");
+  let done = {};
+  const r = await fetch(API + "/v1/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+    body: JSON.stringify({ message: text }),
+  });
+  if (r.status === 401) { token = null; bot.textContent = "La sesión ha caducado. Recarga la página."; return; }
+  if (!r.ok) { bot.textContent = "No se pudo obtener respuesta."; return; }
+  const reader = r.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  for (;;) {
+    const { value, done: finished } = await reader.read();
+    if (finished) break;
+    buffer += decoder.decode(value, { stream: true });
+    let idx;
+    while ((idx = buffer.indexOf("\n\n")) >= 0) {
+      const block = buffer.slice(0, idx); buffer = buffer.slice(idx + 2);
+      const event = (block.match(/^event: (.*)$/m) || [])[1];
+      const data = JSON.parse((block.match(/^data: (.*)$/m) || [, "{}"])[1]);
+      if (event === "token") bot.textContent += data.text;
+      else if (event === "done") done = data;
+      else if (event === "error") bot.textContent += "\n" + data.message;
+    }
+  }
+  if (done.sources && done.sources.length) {
+    const s = document.createElement("div");
+    s.className = "sources";
+    s.textContent = sourcesText(done.sources);
+    bot.appendChild(s);
+  }
+  if (done.message_id) {
+    const rate = document.createElement("div");
+    rate.className = "rate";
+    for (const [label, rating] of [["👍", 1], ["👎", -1]]) {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = label;
+      b.onclick = async () => {
+        await fetch(API + "/v1/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: "Bearer " + token },
+          body: JSON.stringify({ message_id: done.message_id, rating }),
+        });
+        rate.textContent = "Gracias por tu valoración.";
+      };
+      rate.appendChild(b);
+    }
+    bot.appendChild(rate);
+  }
+}
+
+document.getElementById("form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const input = document.getElementById("q");
+  const send = document.getElementById("send");
+  const text = input.value.trim();
+  if (!text || !token) return;
+  input.value = ""; send.disabled = true;
+  add("user", text);
+  try { await ask(text); } catch (err) { add("bot", "No se pudo conectar con el asistente."); }
+  send.disabled = false; input.focus();
+});
+
+openSession().catch(err => add("bot", err.message));
+</script>
+</body>
+</html>

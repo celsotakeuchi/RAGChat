@@ -1,0 +1,16 @@
+id: linea_directa
+version: "1.0"
+audience: internal
+source_language: es
+languages: [es]
+source_file: kb_linea_directa (1).md
+system_prompt: prompts/linea_directa.md
+retrieval:
+  top_k: 5
+  min_score: 0.72        # model-specific: e5 scores cluster in 0.70-0.90, so this only filters clearly unrelated queries
+ui:
+  title: Asistente Línea Directa
+  disclaimer: Respuestas generadas por IA a partir de la base de conocimiento interna. Verifica los datos importantes.
+messages:
+  unknown:
+    es: No he encontrado esta información en la base de conocimiento. Consulta el condicionado o escala la consulta.

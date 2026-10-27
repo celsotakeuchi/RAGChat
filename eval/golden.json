@@ -1,0 +1,91 @@
+[
+  {
+    "question": "¿Qué diferencia hay entre terceros y terceros ampliado?",
+    "expected_ids": [
+      "COC-001"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Qué cubre el todo riesgo?",
+    "expected_ids": [
+      "COC-002"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Puedo asegurar una moto clásica?",
+    "expected_ids": [
+      "MOT-002"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Cómo doy de baja mi póliza?",
+    "expected_ids": [
+      "PRO-003"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿A qué número llamo para dar un parte del hogar?",
+    "expected_ids": [
+      "PRO-004"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Sigue existiendo la marca Vivaz?",
+    "expected_ids": [
+      "EMP-002"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Cuántos asegurados tiene la compañía?",
+    "expected_ids": [
+      "EMP-003"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Qué porcentaje de consultas resuelve la IA?",
+    "expected_ids": [
+      "EMP-006"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Cuánto cuesta el seguro de coche?",
+    "expected_ids": [
+      "COC-004"
+    ],
+    "must_abstain": false,
+    "lang": "es"
+  },
+  {
+    "question": "¿Qué exclusiones tiene el todo riesgo?",
+    "expected_ids": [
+      "LAG-001"
+    ],
+    "must_abstain": true,
+    "lang": "es"
+  },
+  {
+    "question": "¿Cubre el seguro de mascotas el veterinario?",
+    "expected_ids": [
+      "OTR-001",
+      "LAG-001"
+    ],
+    "must_abstain": true,
+    "lang": "es"
+  }
+]

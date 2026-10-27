@@ -1,0 +1,35 @@
+[project]
+name = "ragmvp"
+version = "0.1.0"
+description = "RAG MVP for call-centre agents (pluggable knowledge bases)"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "litellm",
+  "ollama",
+  "pydantic",
+  "pydantic-settings",
+  "pyyaml",
+  "httpx",
+  "numpy",
+  "python-dotenv",
+  "PyJWT",
+  "pypdf",
+]
+
+[project.optional-dependencies]
+local-embeddings = ["fastembed"]
+ui = ["chainlit"]
+dev = ["pytest"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

@@ -1,0 +1,28 @@
+- question: How much compensation do I get if my flight of 2,000 km within the EU is cancelled?
+  expected: [AIR-08]
+  lang: en
+- question: My flight arrived 4 hours late, can I claim compensation?
+  expected: [AIR-07]
+  lang: en
+- question: What meals and hotel must the airline give me while I wait?
+  expected: [AIR-11]
+  lang: en
+- question: Does bad weather exempt the airline from paying compensation?
+  expected: [AIR-12]
+  lang: en
+- question: What can I choose between when my flight is cancelled, a refund or another flight?
+  expected: [AIR-10]
+  lang: en
+- question: I was moved to a lower class than I paid for, what do I get back?
+  expected: [AIR-13]
+  lang: en
+- question: Who do I complain to if the airline refuses to pay?
+  expected: [AIR-15]
+  lang: en
+- question: When am I not entitled to compensation for a cancellation?
+  expected: [AIR-05]
+  lang: en
+- question: What did the airline lose of my suitcase, how much do I get for lost baggage?
+  lang: en
+- question: What is the best pizza recipe?
+  lang: en

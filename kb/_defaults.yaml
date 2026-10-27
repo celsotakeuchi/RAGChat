@@ -1,0 +1,25 @@
+base_prompt: prompts/_base.md
+guardrails:
+  max_question_chars: 1000
+  require_citation: true
+  enforce_grounding: true
+  blocked_patterns:
+    - 'ignor[ae]\s+(todas?\s+)?(las\s+)?(instrucciones|reglas)'
+    - 'ignore\s+(all\s+)?(previous|prior|the above)\s+(instructions|rules)'
+    - '(muestra|revela|repite|show|reveal|print)\s+.{0,20}(prompt|instrucciones del sistema|system prompt)'
+context:
+  max_chars_per_source: 2500
+  max_total_chars: 12000
+  max_chunks: 5
+  score_margin: 0.0
+promotion:
+  min_recall: 0.9
+messages:
+  blocked:
+    es: No puedo atender esta consulta tal como está formulada. Reformula la pregunta sobre el servicio.
+  budget:
+    es: Se ha alcanzado el límite de uso del asistente. Inténtalo más tarde o escala la consulta.
+  busy:
+    es: El asistente está atendiendo muchas consultas. Inténtalo de nuevo en unos segundos.
+  rate_limited:
+    es: Demasiadas consultas seguidas. Espera un momento antes de volver a preguntar.
